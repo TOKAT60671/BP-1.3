@@ -17,7 +17,7 @@ public class ApiClient : MonoBehaviour
 
        var jsondata = JsonUtility.ToJson(request);
         Debug.Log(jsondata);
-        await PerformApiCall("https://avansict123456.azurewebsites.net/account/register", "POST", jsondata);
+        await PerformApiCall("https://avansict2231887.azurewebsites.net/account/register", "POST", jsondata);
     }
 
     public async void Login()
@@ -30,7 +30,7 @@ public class ApiClient : MonoBehaviour
 
         var jsondata = JsonUtility.ToJson(request);
         Debug.Log(jsondata);
-        var response = await PerformApiCall("https://avansict123456.azurewebsites.net/account/register", "POST", jsondata);
+        var response = await PerformApiCall("https://avansict2231887.azurewebsites.net/account/login", "POST", jsondata);
         Debug.Log(response);
         var ResponseDto = JsonUtility.FromJson<PostLoginRequestDto>(response);
     }
