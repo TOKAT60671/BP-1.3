@@ -2,30 +2,35 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
 
 public class ApiClient : MonoBehaviour
 {
-   public async void Register()
+    public TMP_InputField REmailField;
+    public TMP_InputField RPasswordField;
+    public TMP_InputField LEmailField;
+    public TMP_InputField LPasswordField;
+    public async void Register()
     {
         var request = new PostRegisterRequestDto()
         {
-            email = "naam321432432134@test.nl",
-            password = "33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!"
+            email = REmailField.text,
+            password = RPasswordField.text
         };
 
        var jsondata = JsonUtility.ToJson(request);
         Debug.Log(jsondata);
-        await PerformApiCall("https://avansict2231887.azurewebsites.net/account/register", "POST", jsondata);
+        await PerformApiCall("https://avansict2231887.azurewebsites.net/account/Register", "POST", jsondata);
     }
 
     public async void Login()
     {
         var request = new PostRegisterRequestDto()
         {
-            email = "orm123@test.nl",
-            password = "33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!33nW@chtWoord!"
+            email = LEmailField.text,
+            password = LPasswordField.text
         };
 
         var jsondata = JsonUtility.ToJson(request);
@@ -35,7 +40,10 @@ public class ApiClient : MonoBehaviour
         var ResponseDto = JsonUtility.FromJson<PostLoginRequestDto>(response);
     }
 
+    public async void NewSave()
+    {
 
+    }
 
     private async Task<string> PerformApiCall(string url, string method, string jsonData = null, string token = null)
     {

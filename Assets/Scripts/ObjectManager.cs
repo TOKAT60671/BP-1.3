@@ -32,7 +32,7 @@ public class ObjectManager : MonoBehaviour
 
 
 
-        //string object2DId = await ApiClient.SendPostRequestForNew2DObject(2dObject);
+        string object2DId = await ApiClient.SendPostRequestForNew2DObject(2dObject);
         //object2D.id = object2DId;
     }
 
