@@ -34,6 +34,7 @@ public class SaveMaker : MonoBehaviour
 
     public async void ConfirmSave(int confirmSaveIndex)
     {
+        Debug.Log("Confirming save for slot: " + confirmSaveIndex);
         string newSaveName = confirmSaveIndex switch
         {
             1 => NameField1.text,
@@ -48,7 +49,7 @@ public class SaveMaker : MonoBehaviour
         {
             try
             {
-                await ApiHelper.NewSave(newSaveName, confirmSaveIndex - 1); // Slot is 0-based
+                await ApiHelper.NewSave(newSaveName, confirmSaveIndex - 1);
                 await RefreshSavesUI();
                 SetSaveMakerActive(confirmSaveIndex, false);
                 SetSaveActive(confirmSaveIndex, true);
@@ -64,6 +65,7 @@ public class SaveMaker : MonoBehaviour
     {
         try
         {
+            Debug.Log("Refreshing saves UI...");
             string savesJson = await ApiHelper.GetSaves();
             SaveDto[] saves = Newtonsoft.Json.JsonConvert.DeserializeObject<SaveDto[]>(savesJson) ?? new SaveDto[0];
 
@@ -98,6 +100,7 @@ public class SaveMaker : MonoBehaviour
     {
         try
         {
+            Debug.Log("Deleting save for slot: " + deleteSaveIndex);
             var savesJson = await ApiHelper.GetSaves();
             var saves = Newtonsoft.Json.JsonConvert.DeserializeObject<SaveDto[]>(savesJson);
             var save = saves?.FirstOrDefault(s => s.Slot == deleteSaveIndex - 1);
@@ -115,6 +118,7 @@ public class SaveMaker : MonoBehaviour
 
     public async void LoadSave(int loadSaveIndex)
     {
+        Debug.Log("Loading save for slot: " + loadSaveIndex);   
         try
         {
             var savesJson = await ApiHelper.GetSaves();
@@ -124,7 +128,33 @@ public class SaveMaker : MonoBehaviour
             {
                 string saveJson = await ApiHelper.GetSave(save.Id);
                 Debug.Log("Loaded save: " + saveJson);
-                // TODO: Pass this data to your ObjectManager or other systems
+
+                var objectManager = FindFirstObjectByType<ObjectManager>();
+                var screenManager = FindFirstObjectByType<ScreenManagerScript>();
+                if (screenManager != null)
+                {
+                    objectManager.currentSaveId = save.Id;
+                    screenManager.ToGame(); // Activate the Game UI first!
+                }
+                else
+                {
+                    Debug.LogWarning("ScreenManagerScript not found in scene.");
+                }
+
+                if (objectManager != null)
+                {
+                    Debug.Log("Loading objects into ObjectManager...");
+                    objectManager.LoadFromJson(saveJson);
+                }
+                else
+                {
+                    Debug.LogWarning("ObjectManager not found in scene.");
+                }
+
+            }
+            else
+            {
+                Debug.LogWarning($"No save found for slot {loadSaveIndex}");
             }
         }
         catch (Exception ex)

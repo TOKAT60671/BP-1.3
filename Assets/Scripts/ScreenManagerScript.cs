@@ -11,6 +11,8 @@ public class ScreenManagerScript : MonoBehaviour
     public GameObject saves;
     public GameObject Game;
     public SaveMaker saveMaker;
+    public ObjectManager objectManager;
+
 
     public void UnLoad()
     {
@@ -18,6 +20,11 @@ public class ScreenManagerScript : MonoBehaviour
         loginPanel.SetActive(false);
         saves.SetActive(false);
         Game.SetActive(false);
+
+        if (objectManager != null)
+        {
+            objectManager.ClearAllObjects();
+        }
     }
 
     public void ToRegister()
@@ -50,5 +57,6 @@ public class ScreenManagerScript : MonoBehaviour
     {
         UnLoad();
         Debug.Log("To Game Screen");
+        Game.SetActive(true);
     }
 }

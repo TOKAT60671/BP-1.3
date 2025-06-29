@@ -18,7 +18,7 @@ public class Object2D : MonoBehaviour
     {
         if (objectManager == null)
         {
-            objectManager = FindObjectOfType<ObjectManager>();
+            objectManager = FindFirstObjectByType<ObjectManager>();
         }
     }
 

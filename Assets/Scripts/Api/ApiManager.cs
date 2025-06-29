@@ -30,9 +30,9 @@ namespace API
                 Debug.Log("Password does not meet requirements.");
                 return;
             }
-            ApiHelper.Register(RusernameField.text, RpasswordField.text);
+            await ApiHelper.Register(RusernameField.text, RpasswordField.text);
             Debug.Log("Registration successful. You can now log in.");
-            FindObjectOfType<ScreenManagerScript>().ToLogin();
+            FindFirstObjectByType<ScreenManagerScript>().ToLogin();
 
 
         }
@@ -42,7 +42,7 @@ namespace API
         {
             await ApiHelper.Login(LusernameField.text, LpasswordField.text);
             Debug.Log("Login successful.");
-            FindObjectOfType<ScreenManagerScript>().ToSaves();
+            FindFirstObjectByType<ScreenManagerScript>().ToSaves();
         }
 
         public static bool CheckPassword(string password)
