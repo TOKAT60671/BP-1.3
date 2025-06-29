@@ -11,5 +11,6 @@ namespace Dtos
         public Guid Id { get; set; }
         public string Name { get; set; }
         public Guid UserId { get; set; }
+        public int Slot { get; set; }
     }
 }

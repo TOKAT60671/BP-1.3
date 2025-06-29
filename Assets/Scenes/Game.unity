@@ -11528,11 +11528,6 @@ MonoBehaviour:
   SaveName3: {fileID: 631049394}
   SaveName4: {fileID: 1609170986}
   SaveName5: {fileID: 1785371207}
-  saveName1: 
-  saveName2: 
-  saveName3: 
-  saveName4: 
-  saveName5: 
 --- !u!4 &1308234719
 Transform:
   m_ObjectHideFlags: 0
@@ -11541,7 +11536,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1308234717}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 560, y: 740, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -14704,6 +14699,7 @@ MonoBehaviour:
   loginPanel: {fileID: 371824773}
   saves: {fileID: 593156181}
   Game: {fileID: 1339088941}
+  saveMaker: {fileID: 1308234718}
 --- !u!1 &1638812939
 GameObject:
   m_ObjectHideFlags: 0

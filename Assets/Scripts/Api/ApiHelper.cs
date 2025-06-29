@@ -39,13 +39,13 @@ namespace API
         }
 
         // savegame deel
-        public static async Task NewSave(string savename)
+        public static async Task NewSave(string savename, int slot)
         {
             Debug.Log("Creating new save");
             await ApiClient.PerformApiCall(
                 "post",
                 ApiClient.url + "/data/saves",
-                jsonData: @$"{{""Name"": ""{savename}""}}",
+                jsonData: @$"{{""Name"": ""{savename}"", ""Slot"": {slot}}}",
                 token: ApiClient.Token
             );
         }

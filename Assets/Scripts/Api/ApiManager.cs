@@ -23,7 +23,7 @@ namespace API
         
         
 
-        public void Register()
+        public async void Register()
         {
             if (!CheckPassword(RpasswordField.text))
             {
@@ -38,9 +38,9 @@ namespace API
         }
 
 
-        public void Login()
+        public async void Login()
         {
-            ApiHelper.Login(LusernameField.text, LpasswordField.text);
+            await ApiHelper.Login(LusernameField.text, LpasswordField.text);
             Debug.Log("Login successful.");
             FindObjectOfType<ScreenManagerScript>().ToSaves();
         }
