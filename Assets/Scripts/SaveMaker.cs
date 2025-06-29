@@ -45,19 +45,22 @@ public class SaveMaker : MonoBehaviour
             _ => ""
         };
 
-        if (!string.IsNullOrWhiteSpace(newSaveName))
+        if (!CheckSaveName(newSaveName))
         {
-            try
-            {
-                await ApiHelper.NewSave(newSaveName, confirmSaveIndex - 1);
-                await RefreshSavesUI();
-                SetSaveMakerActive(confirmSaveIndex, false);
-                SetSaveActive(confirmSaveIndex, true);
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError("Failed to create save: " + ex.Message);
-            }
+            Debug.LogWarning("Save name must be between 1 and 25 characters.");
+            return;
+        }
+
+        try
+        {
+            await ApiHelper.NewSave(newSaveName, confirmSaveIndex - 1);
+            await RefreshSavesUI();
+            SetSaveMakerActive(confirmSaveIndex, false);
+            SetSaveActive(confirmSaveIndex, true);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError("Failed to create save: " + ex.Message);
         }
     }
 
@@ -208,6 +211,11 @@ public class SaveMaker : MonoBehaviour
             case 4: NewSave4.SetActive(active); break;
             case 5: NewSave5.SetActive(active); break;
         }
+    }
+
+    public static bool CheckSaveName(string saveName)
+    {
+        return !string.IsNullOrWhiteSpace(saveName) && saveName.Length >= 1 && saveName.Length <= 25;
     }
 }
 
