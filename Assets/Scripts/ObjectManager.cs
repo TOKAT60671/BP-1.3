@@ -2,50 +2,96 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Dtos;
+using API;
 
 public class ObjectManager : MonoBehaviour
 {
-    // Menu om objecten vanuit te plaatsen
     public GameObject UISideMenu;
-    // Lijst met objecten die geplaatst kunnen worden die overeenkomen met de prefabs in de prefabs map
     public List<GameObject> prefabObjects;
 
-    // Lijst met objecten die geplaatst zijn in de wereld
     private List<GameObject> placedObjects;
 
-    // Methode om een nieuw 2D object te plaatsen
-    public void PlaceNewObject2D(int typeObjectIndex)
+    private void Awake()
     {
-        // Verberg het zijmenu
-        UISideMenu.SetActive(false);
-        // Instantieer het prefab object op de positie (0,0,0) met geen rotatie
-        GameObject instanceOfPrefab = Instantiate(prefabObjects[typeObjectIndex], Vector3.zero, Quaternion.identity);
-        // Haal het Object2D component op van het nieuw geplaatste object
-        Object2D object2D = instanceOfPrefab.GetComponent<Object2D>();
-        // Stel de objectManager van het object in op deze instantie van ObjectManager
-        object2D.objectManager = this;
-        // Zet de isDragging eigenschap van het object op true zodat het gesleept kan worden
-        object2D.isDragging = true;
-        // Voeg het object toe aan de lijst met geplaatste objecten
-        placedObjects.Add(instanceOfPrefab);
-        //geef het object een id
-
-
-
-        string object2DId = await ApiClient.SendPostRequestForNew2DObject(2dObject);
-        //object2D.id = object2DId;
+        placedObjects = new List<GameObject>();
     }
 
-    // Methode om het menu te tonen
+    // Plaats een nieuw 2D object in de wereld
+    public void PlaceNewObject2D(int typeObjectIndex)
+    {
+        UISideMenu.SetActive(false);
+        GameObject instanceOfPrefab = Instantiate(prefabObjects[typeObjectIndex], Vector2.zero, Quaternion.identity);
+        Object2D object2D = instanceOfPrefab.GetComponent<Object2D>();
+        object2D.objectManager = this;
+        object2D.isDragging = true;
+        object2D.id = Guid.NewGuid(); // Zorg dat elk object een unieke id krijgt
+        object2D.typeIndex = typeObjectIndex;
+        placedObjects.Add(instanceOfPrefab);
+    }
+
+    // Haal alle geplaatste objecten op als GObjectDto's
+    public List<GObjectDto> GetAllGObjectDtos(Guid saveGameId)
+    {
+        var dtos = new List<GObjectDto>();
+        foreach (var obj in placedObjects)
+        {
+            var object2D = obj.GetComponent<Object2D>();
+            if (object2D != null)
+            {
+                dtos.Add(new GObjectDto
+                {
+                    Id = object2D.id,
+                    TypeIndex = object2D.typeIndex,
+                    PositionX = obj.transform.position.x,
+                    PositionY = obj.transform.position.y,
+                    SaveGameId = saveGameId
+                });
+            }
+        }
+        return dtos;
+    }
+
+    public async void SaveAllObjectsToApi(Guid saveGameId)
+    {
+        var dtos = GetAllGObjectDtos(saveGameId);
+        await API.ApiHelper.SaveObjects(saveGameId, dtos.ToArray());
+    }
+    public async void LoadObjectsFromApi(Guid saveGameId)
+    {
+        // Verwijder alle bestaande objecten in de scene
+        foreach (var obj in placedObjects)
+        {
+            Destroy(obj);
+        }
+        placedObjects.Clear();
+
+        string json = await API.ApiHelper.GetSave(saveGameId);
+        // Verwacht dat het JSON een veld "Objects" bevat met een array van GObjectDto
+        var wrapper = JsonUtility.FromJson<GObjectDtoArrayWrapper>(json);
+        if (wrapper != null && wrapper.Objects != null)
+        {
+            foreach (var dto in wrapper.Objects)
+            {
+                GameObject obj = Instantiate(prefabObjects[dto.TypeIndex], new Vector2(dto.PositionX, dto.PositionY), Quaternion.identity);
+                Object2D object2D = obj.GetComponent<Object2D>();
+                object2D.id = dto.Id;
+                object2D.typeIndex = dto.TypeIndex;
+                object2D.objectManager = this;
+                object2D.isDragging = false;
+                placedObjects.Add(obj);
+            }
+        }
+    }
+
+    [Serializable]
+    private class GObjectDtoArrayWrapper
+    {
+        public GObjectDto[] Objects;
+    }
+
     public void ShowMenu()
     {
         UISideMenu.SetActive(true);
-    }
-
-    // Methode om de huidige scène te resetten
-    public void Reset()
-    {
-        // Laad de huidige scène opnieuw
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

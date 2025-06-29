@@ -5,193 +5,178 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
 using TMPro;
+using API;
+using Dtos;
+using System;
+using System.Threading.Tasks;
+using UnityEditor.Overlays;
 
 public class SaveMaker : MonoBehaviour
 {
-    public GameObject NewSave1;
-    public GameObject NewSave2;
-    public GameObject NewSave3;
-    public GameObject NewSave4;
-    public GameObject NewSave5;
+    public GameObject NewSave1, NewSave2, NewSave3, NewSave4, NewSave5;
+    public GameObject SaveMaker1, SaveMaker2, SaveMaker3, SaveMaker4, SaveMaker5;
+    public GameObject Save1, Save2, Save3, Save4, Save5;
+    public TMP_InputField NameField1, NameField2, NameField3, NameField4, NameField5;
+    public TMP_Text SaveName1, SaveName2, SaveName3, SaveName4, SaveName5;
 
-    public GameObject SaveMaker1;
-    public GameObject SaveMaker2;
-    public GameObject SaveMaker3;
-    public GameObject SaveMaker4;
-    public GameObject SaveMaker5;
+    public string saveName1, saveName2, saveName3, saveName4, saveName5;
 
-    public GameObject Save1;
-    public GameObject Save2;
-    public GameObject Save3;
-    public GameObject Save4;
-    public GameObject Save5;
 
-    public TMP_InputField NameField1;
-    public TMP_InputField NameField2;
-    public TMP_InputField NameField3;
-    public TMP_InputField NameField4;
-    public TMP_InputField NameField5;
+    private Guid? saveId1, saveId2, saveId3, saveId4, saveId5;
 
-    public TMP_Text SaveName1;
-    public TMP_Text SaveName2;
-    public TMP_Text SaveName3;
-    public TMP_Text SaveName4;
-    public TMP_Text SaveName5;
-
-    public string saveName1;
-    public string saveName2;
-    public string saveName3;
-    public string saveName4;
-    public string saveName5;
+    private string accessToken => ApiClient.Token;
 
     public void NewSave(int newSaveIndex)
     {
         switch (newSaveIndex)
         {
-            case 1:
-                //new save 1 button pressed
-                NewSave1.gameObject.SetActive(false);
-                SaveMaker1.gameObject.SetActive(true);
-                break;
-            case 2:
-                //new save 2 button pressed
-                NewSave2.gameObject.SetActive(false);
-                SaveMaker2.gameObject.SetActive(true);
-                break;
-            case 3:
-                //new save 3 button pressed
-                NewSave3.gameObject.SetActive(false);
-                SaveMaker3.gameObject.SetActive(true);
-                break;
-            case 4:
-                //new save 4 button pressed
-                NewSave4.gameObject.SetActive(false);
-                SaveMaker4.gameObject.SetActive(true);
-                break;
-            case 5:
-                //new save 5 button pressed
-                NewSave5.gameObject.SetActive(false);
-                SaveMaker5.gameObject.SetActive(true);
-                break;
+            case 1: NewSave1.SetActive(false); SaveMaker1.SetActive(true); break;
+            case 2: NewSave2.SetActive(false); SaveMaker2.SetActive(true); break;
+            case 3: NewSave3.SetActive(false); SaveMaker3.SetActive(true); break;
+            case 4: NewSave4.SetActive(false); SaveMaker4.SetActive(true); break;
+            case 5: NewSave5.SetActive(false); SaveMaker5.SetActive(true); break;
         }
     }
-    public void ConfirmSave(int confirmSaveIndex)
+
+    public async void ConfirmSave(int confirmSaveIndex)
     {
         switch (confirmSaveIndex)
         {
             case 1:
-                //new save 1 confirmed
-                SaveMaker1.gameObject.SetActive(false);
-                Save1.gameObject.SetActive(true);
-                saveName1 = NameField1.text;
-                SaveName1.text = saveName1;
+                SaveMaker1.SetActive(false); Save1.SetActive(true);
+                saveName1 = NameField1.text; SaveName1.text = saveName1;
+                saveId1 = await CreateSaveOnApi(saveName1);
                 break;
-
             case 2:
-                //new save 2 confirmed
-                SaveMaker2.gameObject.SetActive(false);
-                Save2.gameObject.SetActive(true);
-                saveName2 = NameField2.text;
-                SaveName2.text = saveName2;
+                SaveMaker2.SetActive(false); Save2.SetActive(true);
+                saveName2 = NameField2.text; SaveName2.text = saveName2;
+                saveId2 = await CreateSaveOnApi(saveName2);
                 break;
-
             case 3:
-                //new save 3 confirmed
-                SaveMaker3.gameObject.SetActive(false);
-                Save3.gameObject.SetActive(true);
-                saveName3 = NameField3.text;
-                SaveName3.text = saveName3;
+                SaveMaker3.SetActive(false); Save3.SetActive(true);
+                saveName3 = NameField3.text; SaveName3.text = saveName3;
+                saveId3 = await CreateSaveOnApi(saveName3);
                 break;
-
             case 4:
-                //new save 4 confirmed
-                SaveMaker4.gameObject.SetActive(false);
-                Save4.gameObject.SetActive(true);
-                saveName4 = NameField4.text;
-                SaveName4.text = saveName4;
+                SaveMaker4.SetActive(false); Save4.SetActive(true);
+                saveName4 = NameField4.text; SaveName4.text = saveName4;
+                saveId4 = await CreateSaveOnApi(saveName4);
                 break;
-
             case 5:
-                //new save 5 confirmed
-                SaveMaker5.gameObject.SetActive(false);
-                Save5.gameObject.SetActive(true);
-                saveName5 = NameField5.text;
-                SaveName5.text = saveName5;
+                SaveMaker5.SetActive(false); Save5.SetActive(true);
+                saveName5 = NameField5.text; SaveName5.text = saveName5;
+                saveId5 = await CreateSaveOnApi(saveName5);
                 break;
         }
+    }
+
+    private async Task<Guid?> CreateSaveOnApi(string saveName)
+    {
+        try
+        {
+            await ApiHelper.NewSave(saveName);
+            string savesJson = await ApiHelper.GetSaves();
+            Debug.Log("Saves JSON: " + savesJson);
+
+            if (string.IsNullOrWhiteSpace(savesJson) || !savesJson.TrimStart().StartsWith("["))
+            {
+                Debug.LogError("Saves JSON is null, empty, or not an array.");
+                return null;
+            }
+
+            SaveDto[] saves = null;
+            try
+            {
+                saves = Newtonsoft.Json.JsonConvert.DeserializeObject<SaveDto[]>(savesJson);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError("Deserialization failed: " + ex.Message);
+                return null;
+            }
+
+            if (saves != null)
+            {
+                foreach (var save in saves)
+                {
+                    if (save != null && save.Name == saveName)
+                        return save.Id;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError("Failed to create save: " + ex.Message);
+        }
+        return null;
     }
 
     public void ReturnToSaveMenu(int returnToSaveMenuIndex)
     {
         switch (returnToSaveMenuIndex)
         {
-            case 1:
-                //return to save menu from new save 1
-                SaveMaker1.gameObject.SetActive(false);
-                NewSave1.gameObject.SetActive(true);
-                break;
-            case 2:
-                //return to save menu from new save 2
-                SaveMaker2.gameObject.SetActive(false);
-                NewSave2.gameObject.SetActive(true);
-                break;
-            case 3:
-                //return to save menu from new save 3
-                SaveMaker3.gameObject.SetActive(false);
-                NewSave3.gameObject.SetActive(true);
-                break;
-            case 4:
-                //return to save menu from new save 4
-                SaveMaker4.gameObject.SetActive(false);
-                NewSave4.gameObject.SetActive(true);
-                break;
-            case 5:
-                //return to save menu from new save 5
-                SaveMaker5.gameObject.SetActive(false);
-                NewSave5.gameObject.SetActive(true);
-                break;
+            case 1: SaveMaker1.SetActive(false); NewSave1.SetActive(true); break;
+            case 2: SaveMaker2.SetActive(false); NewSave2.SetActive(true); break;
+            case 3: SaveMaker3.SetActive(false); NewSave3.SetActive(true); break;
+            case 4: SaveMaker4.SetActive(false); NewSave4.SetActive(true); break;
+            case 5: SaveMaker5.SetActive(false); NewSave5.SetActive(true); break;
         }
     }
-    public void DeleteSave(int deleteSaveIndex)
+
+    public async void DeleteSave(int deleteSaveIndex)
     {
+        Guid? saveId = null;
         switch (deleteSaveIndex)
         {
             case 1:
-                //delete save 1
-                Save1.gameObject.SetActive(false);
-                NewSave1.gameObject.SetActive(true);
-                saveName1 = null;
-                break;
+                saveId = saveId1; Save1.SetActive(false); NewSave1.SetActive(true); saveName1 = null; saveId1 = null; break;
             case 2:
-                //delete save 2
-                Save2.gameObject.SetActive(false);
-                NewSave2.gameObject.SetActive(true);
-                saveName2 = null;
-                break;
+                saveId = saveId2; Save2.SetActive(false); NewSave2.SetActive(true); saveName2 = null; saveId2 = null; break;
             case 3:
-                //delete save 3
-                Save3.gameObject.SetActive(false);
-                NewSave3.gameObject.SetActive(true);
-                saveName3 = null;
-                break;
+                saveId = saveId3; Save3.SetActive(false); NewSave3.SetActive(true); saveName3 = null; saveId3 = null; break;
             case 4:
-                //delete save 4
-                Save4.gameObject.SetActive(false);
-                NewSave4.gameObject.SetActive(true);
-                saveName4 = null;
-                break;
+                saveId = saveId4; Save4.SetActive(false); NewSave4.SetActive(true); saveName4 = null; saveId4 = null; break;
             case 5:
-                //delete save 5
-                Save5.gameObject.SetActive(false);
-                NewSave5.gameObject.SetActive(true);
-                saveName5 = null;
-                break;
+                saveId = saveId5; Save5.SetActive(false); NewSave5.SetActive(true); saveName5 = null; saveId5 = null; break;
+        }
+        if (saveId.HasValue)
+        {
+            try
+            {
+                await ApiHelper.DeleteSave(saveId.Value);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError("Failed to delete save: " + ex.Message);
+            }
         }
     }
 
-    public void LoadSave(int loadSaveIndex)
+    public async void LoadSave(int loadSaveIndex)
     {
-
+        Guid? saveId = null;
+        switch (loadSaveIndex)
+        {
+            case 1: saveId = saveId1; break;
+            case 2: saveId = saveId2; break;
+            case 3: saveId = saveId3; break;
+            case 4: saveId = saveId4; break;
+            case 5: saveId = saveId5; break;
+        }
+        if (saveId.HasValue)
+        {
+            try
+            {
+                string saveJson = await ApiHelper.GetSave(saveId.Value);
+                Debug.Log("Loaded save: " + saveJson);
+                // TODO: Pass this data to your ObjectManager or other systems
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError("Failed to load save: " + ex.Message);
+            }
+        }
     }
+
 }
 

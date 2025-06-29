@@ -1,6 +1,8 @@
 using System;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UIElements;
 
 public class Object2D : MonoBehaviour
 {
@@ -9,23 +11,36 @@ public class Object2D : MonoBehaviour
     public Vector3 objectPosition;
 
     public bool isDragging = false;
+    public Guid id;
+    public int typeIndex;
+
+    private void Awake()
+    {
+        if (objectManager == null)
+        {
+            objectManager = FindObjectOfType<ObjectManager>();
+        }
+    }
 
     public void Update()
     {
         if (isDragging)
+        {
             objectPosition = GetMousePosition();
-            this.transform.position = objectPosition;
-            
+            this.gameObject.transform.position = objectPosition;
+        }
     }
 
-    private void OnMouseUpAsButton()
-    {
-        isDragging = !isDragging;
 
-        if (!isDragging)
-        {
-            objectManager.ShowMenu();
-        }
+    private void OnMouseDown()
+    {
+        isDragging = true;
+    }
+
+    private void OnMouseUp()
+    {
+        isDragging = false;
+        objectManager.ShowMenu();
     }
 
     private Vector3 GetMousePosition()
@@ -34,5 +49,4 @@ public class Object2D : MonoBehaviour
         positionInWorld.z = 0;
         return positionInWorld;
     }
-
 }
